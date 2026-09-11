@@ -1,0 +1,31 @@
+{
+  "name": "Flutter Android Development",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "jdkDistro": "tem"
+    }
+  },
+  "remoteUser": "developer",
+  "updateRemoteUserUID": true,
+  "forwardPorts": [5037],
+  // Runs sequentially after the container initializes and Temurin Java is injected
+  "postCreateCommand": "sudo chown -R developer:developer . && mv /home/developer/flutter /home/developer/flutter2 && mv /home/developer/flutter2/flutter /home/developer/flutter && yes | sdkmanager --licenses && sdkmanager 'platform-tools' 'platforms;android-36' 'build-tools;37.0.0' && flutter doctor",
+  // Optional: Automatically installs useful extensions inside your DevContainer
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Dart-Code.flutter",
+        "Dart-Code.dart-code",
+        "vscjava.vscode-java-pack"
+      ]
+    }
+  },
+  "mounts": [
+      "source=gradle-cache,target=/home/developer/.gradle,type=volume"
+    ]
+}

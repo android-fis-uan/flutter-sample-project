@@ -1,0 +1,68 @@
+name: Firebase Test Lab Run
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --debug
+
+      # Upload the APK so the next job can access it
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
+
+  firebase-test-lab:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      # Download the APK uploaded in the previous job
+      - name: Download APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug
+          path: build/app/outputs/flutter-apk
+
+      - name: Authenticate to Google Cloud
+        if: ${{ hashFiles('app-debug') != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        if: ${{ hashFiles('app-debug') != '' }}
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Run Robo Test in Firebase Test Lab
+        if: ${{ hashFiles('app-debug') != '' }}
+        run: |
+          gcloud firebase test android run \
+            --type robo \
+            --app build/app/outputs/flutter-apk/app-debug.apk \
+            --device model=MediumPhone.arm,version=30,locale=en,orientation=portrait \
+            --timeout 10m
