@@ -1,22 +1,29 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
 # Please see the documentation for all configuration options:
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/"
+    directory: "/android"
     schedule:
       interval: "weekly"
     groups:
       androidx:
         applies-to: version-updates
-        patterns: 
+        patterns:
           - "androidx.*"
       project-deps:
         applies-to: version-updates
         patterns:
           - "com.android.application"
           - "com.android.library"
-          - "org.jetbrains.kotlin.android"      
+          - "org.jetbrains.kotlin.android"
+  # Dart and Flutter dependencies are managed through pubspec.yaml.
+  - package-ecosystem: "pub"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker"
+    directory: "/.devcontainer"
+    schedule:
+      interval: "weekly"

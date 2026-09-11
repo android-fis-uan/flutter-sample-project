@@ -10,7 +10,7 @@ Initially this project is intended to be en example on how to organise your sour
 - Continuous integration workflow: the [`flutter.yml`](.github/workflows/flutter.yml) file show how to achieve continuous integration for this project. You can copy this file in your own project.
   - `build`: this job compiles and generates an APK file that can be used to test the application.
   - `firebase-test-lab`: this job tests your application using Firebase Test Lab.
-- Dev Containers: In case you want to use dev containers with your project, the [`.devcontainers`](.devcontainers/) folder contains the configuration needed to develop using dev containers.
+- Dev Containers: In case you want to use dev containers with your project, the [`.devcontainer`](.devcontainer/) folder contains the configuration needed to develop using dev containers.
 
 ## Flutter: Getting Started
 
